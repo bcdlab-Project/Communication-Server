@@ -11,27 +11,7 @@ const io = new Server(server, {
   }
 });
 
-const webUserNamespace = io.of("/web");
-const nodesNamespace = io.of("/nodes");
-
-nodesNamespace.use((socket, next) => {
-  if (socket.handshake.auth.token) {
-    return next();
-  }
-  next(new Error("invalid token"));
-});
-
-nodesNamespace.on("connection", (socket) => {
-  // Startup of Node Connection
-  socket.nodeId = socket.handshake.auth.nodeId;
-  console.log("New Node Connected | Node ID: ", socket.nodeId);
-  socket.leaveAll();
-  socket.join(socket.nodeId);
-
-  socket.on("disconnect", () => {
-    console.log("Node Disconnected | Node ID: ", socket.nodeId);
-  });
-});
+require('./namespaces')(io);
 
 io.on('connection', (socket) => {
   console.log('new connection');
@@ -44,10 +24,16 @@ io.on('connection', (socket) => {
 });
 
 instrument(io, {
-  auth: false,
+  auth: {
+    type: "basic",
+    username: "admin",
+    password: "$2b$10$heqvAkYMez.Va6Et2uXInOnkCT6/uQj1brkrbyG3LpopDklcq7ZOS" // "changeit" encrypted with bcrypt
+  },
+  readonly: true,
   mode: "development",
 });
 
 server.listen(3000, () => {
-  console.log('listening on *:3000');
+  console.log('\nbcdLab Communication Server Started')
+  console.log('listening on *:3000\n');
 });
