@@ -1,4 +1,4 @@
-module.exports = function (io) {
+module.exports = function (io,metric) {
   const nodesNamespace = io.of("/nodes");
 
   nodesNamespace.use((socket, next) => {
@@ -9,6 +9,8 @@ module.exports = function (io) {
     });
     
     nodesNamespace.on("connection", (socket) => {
+      metric.nodeConnected();
+
       // Startup of Node Connection
       socket.nodeId = socket.handshake.auth.nodeId;
       console.log("New Node Connected | Node ID: ", socket.nodeId);
@@ -16,6 +18,7 @@ module.exports = function (io) {
       socket.join(socket.nodeId);
     
       socket.on("disconnect", () => {
+        metric.nodeDisconnected();
         console.log("Node Disconnected | Node ID: ", socket.nodeId);
       });
     });

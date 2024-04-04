@@ -1,8 +1,8 @@
-const { createServer } = require("http");
+const server = require("http").createServer();
 const { Server } = require("socket.io");
 const { instrument } = require("@socket.io/admin-ui");
 
-const server = createServer();
+console.log('\nbcdLab Communication Server Started\n');
 
 const io = new Server(server, {
   cors: {
@@ -11,17 +11,24 @@ const io = new Server(server, {
   }
 });
 
-require('./namespaces')(io);
+const MetricServer = require('./src/MetricsServer');
 
-io.on('connection', (socket) => {
-  console.log('new connection');
-  socket.on('chat message', (msg) => {
-    console.log('message: ' + msg);
-  });
-  socket.on('disconnect', () => {
-    console.log('connection closed');
-  });
-});
+const metric = new MetricServer();
+metric.start();
+
+
+require('./src/Namespaces/nodes')(io,metric.namespaceEvents);
+require('./src/Namespaces/web')(io,metric.namespaceEvents);
+
+// io.on('connection', (socket) => {
+//   console.log('new connection');
+//   socket.on('chat message', (msg) => {
+//     console.log('message: ' + msg);
+//   });
+//   socket.on('disconnect', () => {
+//     console.log('connection closed');
+//   });
+// });
 
 instrument(io, {
   auth: {
@@ -34,6 +41,5 @@ instrument(io, {
 });
 
 server.listen(3000, () => {
-  console.log('\nbcdLab Communication Server Started')
-  console.log('listening on *:3000\n');
+  console.log('socket.io Server listening on *:3000\n');
 });
