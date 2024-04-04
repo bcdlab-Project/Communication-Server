@@ -14,4 +14,8 @@ module.exports = class {
         this.MetricServer.Disconnection();
         this.MetricServer.metrics.connectedNodes.dec();
     }
+
+    nodeAuthFailed() {
+        this.MetricServer.metrics.authFailedNodes.inc();
+    }
 }

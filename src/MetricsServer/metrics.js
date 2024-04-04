@@ -11,14 +11,19 @@ module.exports = function (promClient) {
 
         connectedNodes: new Gauge({
             name: 'socket_io_connected_nodes',
-            help: 'Total count of nodes connected'
+            help: 'Number of currently connected nodes'
+        }),
+
+        connectedNodes: new Counter({
+            name: 'socket_io_auth_failed_nodes',
+            help: 'Total count of failed auth attempts on nodes'
         }),
 
         // Web Metrics
 
         connectedWeb: new Gauge({
             name: 'socket_io_connected_web',
-            help: 'Total count of web connected'
+            help: 'Number of currently connected web users'
         }),
 
         // Events Metrics
