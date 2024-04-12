@@ -11,7 +11,9 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@socket.io/admin-ui": "^0.5.1",
+    "mysql2": "^3.9.4",
     "socket.io": "^4.7.5",
-    "socket.io-prometheus": "^0.3.0"
+    "socket.io-prometheus": "^0.3.0",
+    "speakeasy": "^2.0.0"
   }
 }

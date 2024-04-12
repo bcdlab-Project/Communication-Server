@@ -8,5 +8,6 @@ LABEL "Contact" = "contact@mail.bcdlab.xyz"
 
 COPY "./" "/server"
 EXPOSE 3000
+EXPOSE 9090
 WORKDIR "/server"
 CMD ["npm", "start"]

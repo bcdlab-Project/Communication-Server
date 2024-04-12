@@ -1,45 +1,55 @@
-const server = require("http").createServer();
-const { Server } = require("socket.io");
+const server         = require("http").createServer();
+const { Server }     = require("socket.io");
 const { instrument } = require("@socket.io/admin-ui");
 
+// Service Start Message
 console.log('\nbcdLab Communication Server Started\n');
 
+// ------------ Prepare Configs ------------ //
+const config = require('./config')();
+
+// ------------ Prepare Socket.IO Server with CORS ------------ //
 const io = new Server(server, {
   cors: {
-    origin: ["null","https://admin.socket.io","http://192.168.22.48"],
+    origin: config.cors,
     credentials: true
   }
 });
 
+// ------------ Prepare and Start Metrics Server ------------ //
 const MetricServer = require('./src/MetricsServer');
-
 const metric = new MetricServer();
 metric.start();
 
+// ------------ Prepare and Connect to Database ------------ //
+const DataBase = require('./src/Database');
+const db = new DataBase();
+db.connect();
 
-require('./src/Namespaces/nodes')(io,metric.namespaceEvents);
-require('./src/Namespaces/web')(io,metric.namespaceEvents);
+// Reset currently running nodes
+db.resetNodes();
 
-// io.on('connection', (socket) => {
-//   console.log('new connection');
-//   socket.on('chat message', (msg) => {
-//     console.log('message: ' + msg);
-//   });
-//   socket.on('disconnect', () => {
-//     console.log('connection closed');
-//   });
-// });
+// ------------ Define NameSpaces ------------ //
+require('./src/Namespaces/nodes')(io,metric.namespaceEvents,db.namespaces.nodes);
+//require('./src/Namespaces/web')(io,metric.namespaceEvents,db);
 
+// Refuse Main NameSpace Connections
+io.use((socket, next) => {
+  return next(new Error("Not Authorized"));
+});
+
+// ------------ Config for Admin UI ------------ //
 instrument(io, {
   auth: {
     type: "basic",
-    username: "admin",
-    password: "$2b$10$heqvAkYMez.Va6Et2uXInOnkCT6/uQj1brkrbyG3LpopDklcq7ZOS" // "changeit" encrypted with bcrypt
+    username: config.webUi_username,
+    password: config.webUi_password // "changeit" encrypted with bcrypt
   },
-  readonly: true,
-  mode: "development",
+  readonly: config.webUi_readonly,
+  mode: config.webUi_mode,
 });
 
+// ------------ Start the Server ------------ //
 server.listen(3000, () => {
   console.log('socket.io Server listening on *:3000\n');
 });

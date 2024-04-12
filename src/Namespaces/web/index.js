@@ -1,5 +1,7 @@
-module.exports = function (io) {
-    const webUserNamespace = io.of("/web");
+// ------------ WebUsers NameSpace ------------ //
+
+//module.exports = function (io) {
+    //const webUserNamespace = io.of("/web");
   
     // nodesNamespace.use((socket, next) => {
     //     if (socket.handshake.auth.token) {
@@ -19,4 +21,4 @@ module.exports = function (io) {
     //       console.log("Node Disconnected | Node ID: ", socket.nodeId);
     //     });
     //   });
-    }
+    //}
