@@ -1,7 +1,7 @@
 # bcdLab Project Communication Server
 
 > [!Note]
-> This Communication Server is base in Socket.io and it's only prepared to work with the bcdLab Project.
+> This Communication Server is based in Socket.io and it's only prepared to work with the bcdLab Project.
 
 This repository stores the code for the Communication Server of the bcdLab Project.
 
